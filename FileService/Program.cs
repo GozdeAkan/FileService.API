@@ -40,14 +40,14 @@ using (var serviceProvider = builder.Services.BuildServiceProvider())
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
    .AddJwtBearer(options =>
    {
-       options.Authority = "https://myauth-bebhf3f4czfdb9fe.canadacentral-01.azurewebsites.net"; // IdentityServer URL
+       options.Authority = "https://file-service-auth-f7ewejbae5ehh5hd.canadacentral-01.azurewebsites.net/";
        options.RequireHttpsMetadata = false; // Set to true in production
        options.TokenValidationParameters = new TokenValidationParameters
        {
            ValidateAudience = true,
            ValidAudience = "file-service",
            ValidateIssuer = true,
-           ValidIssuer = "https://myauth-bebhf3f4czfdb9fe.canadacentral-01.azurewebsites.net",
+           ValidIssuer = "https://file-service-auth-f7ewejbae5ehh5hd.canadacentral-01.azurewebsites.net/",
            ValidateLifetime = true,
            ValidateIssuerSigningKey = true, 
        };
