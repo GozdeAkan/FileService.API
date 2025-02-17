@@ -1,0 +1,41 @@
+name: Publish
+on:
+  push:
+    branches:
+      - master 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 'Checkout'
+      uses: actions/checkout@v3
+      
+    - name: 'Setup .NET 9 SDK'
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '9.0.x'
+
+    
+        
+    - name: 'Build Solution'
+      run: |
+        dotnet restore ./FileService/FileService.csproj
+        dotnet build ./FileService/FileService.csproj --configuration Release
+
+    - name: 'Apply Database Migrations' 
+      run: |
+        dotnet tool install --global dotnet-ef
+        dotnet ef database update -c AppDbContext -p ./DataAccess/DataAccess.csproj -s ./FileService/FileService.csproj
+    
+    - name: 'Publish'
+      run: |
+        dotnet publish ./FileService/FileService.csproj --configuration Release --no-build --output './publish'
+        
+    - name: 'Deploy to Azure Web App'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: file-service-api
+        publish-profile: ${{ secrets.AZURE_PUBLISH_FILESERVICE_PROFILE }}
+        package: './publish'
